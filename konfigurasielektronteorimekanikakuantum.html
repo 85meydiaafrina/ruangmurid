@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya – Konfigurasi Elektron Mekanika Kuantum</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#ffffff;
+  --bg2:#f8f9fc;
+  --bg3:#f0f4ff;
+  --surface:#ffffff;
+  --surface2:#f4f6fb;
+  --border:#e0e6f0;
+  --border2:#c8d5ea;
+  --primary:#4f46e5;
+  --primary2:#6366f1;
+  --primary-light:#eef2ff;
+  --accent:#059669;
+  --accent2:#10b981;
+  --accent-light:#ecfdf5;
+  --gold:#d97706;
+  --gold-light:#fef3c7;
+  --sky:#0284c7;
+  --sky-light:#e0f2fe;
+  --rose:#dc2626;
+  --rose-light:#fee2e2;
+  --purple:#7c3aed;
+  --purple-light:#ede9fe;
+  --text:#1e293b;
+  --text2:#475569;
+  --text3:#94a3b8;
+  --s-col:#0284c7;
+  --p-col:#7c3aed;
+  --d-col:#059669;
+  --f-col:#d97706;
+  --h:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:#ffffff;
+  border-bottom:2px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:14px;
+  box-shadow:0 2px 12px rgba(79,70,229,0.08);
+}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#059669);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(79,70,229,0.3);}
+.logo-text{font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:var(--primary);letter-spacing:-.02em;}
+.logo-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:.1em;}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:var(--text2);cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:0 14px;height:var(--h);white-space:nowrap;transition:color .18s;letter-spacing:.01em;}
+.nb::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));transform:scaleX(0);transition:transform .2s;border-radius:3px 3px 0 0;}
+.nb:hover{color:var(--primary);}
+.nb.active{color:var(--primary);font-weight:800;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--text);flex-shrink:0;}
+@media(max-width:640px){
+  header{padding:0 12px;}
+  .logo-text{font-size:13px;}
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;background:#fff;border-bottom:2px solid var(--border);box-shadow:0 8px 32px rgba(79,70,229,.1);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:48px;width:100%;text-align:left;padding:0 20px;border-bottom:1px solid var(--border);font-size:14px;display:flex;align-items:center;gap:10px;}
+  .nb::after{display:none;}
+  .nb.active{background:var(--primary-light);color:var(--primary);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fadeUp .22s ease;}
+.scroll{flex:1;overflow-y:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--primary) var(--bg2);}
+.scroll::-webkit-scrollbar{width:5px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--primary);border-radius:5px;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;transition:border-color .2s,box-shadow .2s,transform .15s;}
+.card:hover{border-color:var(--primary);box-shadow:0 4px 20px rgba(79,70,229,0.08);transform:translateY(-1px);}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.ci.b{background:var(--sky-light);border:1.5px solid rgba(2,132,199,0.2);}
+.ci.p{background:var(--purple-light);border:1.5px solid rgba(124,58,237,0.2);}
+.ci.g{background:var(--accent-light);border:1.5px solid rgba(5,150,105,0.2);}
+.ci.y{background:var(--gold-light);border:1.5px solid rgba(217,119,6,0.2);}
+.ci.r{background:var(--rose-light);border:1.5px solid rgba(220,38,38,0.2);}
+.ct{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:var(--primary);letter-spacing:-.01em;}
+.card p{font-size:13px;line-height:1.7;color:var(--text2);margin-bottom:5px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);line-height:1.6;padding:6px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--accent);font-weight:800;font-size:17px;margin-top:-1px;flex-shrink:0;}
+.chips{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap;}
+.chip{border-radius:6px;padding:3px 10px;font-size:11.5px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.chip-s{background:var(--sky-light);border:1.5px solid rgba(2,132,199,0.25);color:var(--sky);}
+.chip-p{background:var(--purple-light);border:1.5px solid rgba(124,58,237,0.25);color:var(--purple);}
+.chip-d{background:var(--accent-light);border:1.5px solid rgba(5,150,105,0.25);color:var(--accent);}
+.chip-f{background:var(--gold-light);border:1.5px solid rgba(217,119,6,0.25);color:var(--gold);}
+.sep{display:flex;align-items:center;gap:10px;margin:6px 0 4px;}
+.sep span{font-family:'Poppins',sans-serif;font-size:11px;color:var(--primary2);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;font-weight:700;}
+.sep::before,.sep::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,transparent,var(--border),transparent);}
+
+/* ── HERO BANNER ── */
+.hero{background:linear-gradient(135deg,var(--primary-light),var(--accent-light));border:1.5px solid rgba(79,70,229,0.15);border-radius:16px;padding:16px 22px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 4px 20px rgba(79,70,229,0.07);}
+.hero::after{content:'⚛';position:absolute;right:20px;top:-8px;font-size:80px;opacity:.06;pointer-events:none;}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-bottom:3px;font-weight:700;}
+.h-title{font-family:'Poppins',sans-serif;font-size:clamp(15px,2vw,20px);font-weight:800;color:var(--primary);line-height:1.2;margin-bottom:4px;}
+.h-desc{font-size:12.5px;color:var(--text2);line-height:1.6;max-width:560px;}
+
+/* ── SIMULASI ── */
+.sim-wrap{display:grid;grid-template-columns:230px 1fr;gap:10px;flex:1;min-height:0;}
+.ctrl-panel{background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
+.ctrl-panel h3{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;}
+.cg label{display:block;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;font-family:'Poppins',sans-serif;}
+select{width:100%;background:#fff;border:1.5px solid var(--border2);border-radius:8px;color:var(--text);padding:8px 28px 8px 10px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%234f46e5' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:border-color .2s;font-weight:600;}
+select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,0.1);}
+select option{background:#fff;}
+.btn{width:100%;border:none;border-radius:9px;padding:9px;font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.02em;}
+.btn-sim{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 14px rgba(79,70,229,0.3);}
+.btn-sim:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,0.4);}
+.btn-sim:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-stop{background:var(--rose-light);border:1.5px solid rgba(220,38,38,0.25);color:var(--rose);font-weight:700;}
+.btn-stop:hover{background:#fecaca;}
+.btn-stop:disabled{opacity:.4;cursor:not-allowed;}
+.btn-reset{background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--primary);color:var(--primary);}
+.sim-right{display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+.canvas-wrap{background:#0d1117;border:1.5px solid var(--border2);border-radius:14px;padding:10px;flex:1;min-height:0;display:flex;flex-direction:column;}
+.canvas-wrap h3{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#7dd3fc;margin-bottom:7px;letter-spacing:.06em;}
+#simCanvas{width:100%;border-radius:8px;display:block;flex:1;}
+.info-bar{display:flex;gap:8px;margin-top:0;flex-shrink:0;}
+.ibox{flex:1;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:8px;text-align:center;}
+.iv{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;display:block;}
+.il{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);font-family:'Poppins',sans-serif;font-weight:600;}
+.iv.s{color:var(--s-col);}
+.iv.p{color:var(--p-col);}
+.iv.d{color:var(--d-col);}
+.iv.f{color:var(--f-col);}
+.iv.w{color:var(--gold);}
+
+/* ── NOTEBOX ── */
+.notebox{background:var(--primary-light);border:1.5px solid rgba(79,70,229,0.2);border-radius:10px;padding:10px 14px;margin-top:6px;}
+.notebox .nt{font-size:10px;font-weight:800;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;font-family:'Poppins',sans-serif;}
+.notebox p{font-size:12.5px;color:var(--text2);line-height:1.6;margin:0;}
+.formula{background:var(--bg3);border:1.5px solid rgba(79,70,229,0.15);border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--primary);text-align:center;margin:6px 0;font-weight:600;}
+
+/* ── LEMBAR KERJA ── */
+.lk-fit{flex:1;display:flex;flex-direction:column;gap:8px;padding:12px 20px 14px;overflow:hidden;min-height:0;}
+.lk-top{display:flex;gap:10px;align-items:stretch;flex-shrink:0;}
+.lk-hero{background:linear-gradient(135deg,var(--primary-light),var(--accent-light));border:1.5px solid rgba(79,70,229,0.2);border-radius:12px;padding:10px 16px;display:flex;flex-direction:column;justify-content:center;min-width:200px;position:relative;overflow:hidden;}
+.lk-hero::after{content:'📝';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:30px;opacity:.2;}
+.lk-hero .h-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;font-weight:700;}
+.lk-hero .h-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:800;color:var(--primary);line-height:1.2;}
+.lk-identitas{flex:1;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:8px 12px;}
+.lk-identitas > div{display:flex;flex-direction:column;justify-content:center;}
+.lk-identitas label{font-size:9px;color:var(--primary);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:3px;display:block;font-family:'Poppins',sans-serif;}
+.lk-input{width:100%;background:#f8fafc;border:1.5px solid var(--border);border-radius:7px;color:var(--text);padding:6px 9px;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:600;outline:none;transition:border-color .2s;}
+.lk-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,0.08);}
+select.lk-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10'%3E%3Cpath fill='%234f46e5' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;padding-right:22px;background-color:#f8fafc;}
+.lk-main{flex:1;display:grid;grid-template-columns:1.4fr 1fr;gap:10px;min-height:0;overflow:hidden;}
+.lk-col-tables{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden;}
+.lk-col-q{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden;}
+.lk-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;min-height:0;flex:1;}
+.lk-card-head{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-shrink:0;}
+.lk-card-head .ci{width:24px;height:24px;font-size:12px;border-radius:7px;}
+.lk-card-head .ct{font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;color:var(--primary);flex:1;}
+.lk-mini-btn{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border:none;border-radius:7px;padding:4px 12px;font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.02em;}
+.lk-mini-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,70,229,0.3);}
+.lk-table{width:100%;border-collapse:collapse;font-size:12px;}
+.lk-table th{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:6px 9px;text-align:left;border:1px solid rgba(79,70,229,0.1);font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;font-family:'Poppins',sans-serif;}
+.lk-table td{padding:4px 6px;border:1px solid var(--border);color:var(--text2);vertical-align:middle;background:#fff;}
+.lk-table tr:nth-child(even) td{background:var(--bg2);}
+.lk-table input,.lk-table select,.lk-table textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:12px;padding:2px 4px;font-weight:600;}
+.lk-table input:focus,.lk-table select:focus{background:var(--primary-light);border-radius:4px;}
+.lk-table select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 10 10'%3E%3Cpath fill='%234f46e5' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;padding-right:14px;background-color:transparent;}
+.disc-area{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:12.5px;color:var(--text);font-weight:600;background:var(--bg2);resize:none;outline:none;transition:border-color .2s;line-height:1.6;flex:1;}
+.disc-area:focus{border-color:var(--primary);background:#fff;}
+
+/* ── KUIS ── */
+.quiz-wrap{flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden;min-height:0;}
+.qcard{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.qno{font-family:'Poppins',sans-serif;font-size:10px;color:var(--primary2);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:6px;}
+.qtext{font-size:clamp(13px,1.5vw,15px);color:var(--text);line-height:1.6;margin-bottom:10px;flex-shrink:0;font-weight:600;}
+.qtext .math{font-family:'JetBrains Mono',monospace;background:var(--primary-light);padding:1px 7px;border-radius:5px;color:var(--primary);font-size:.9em;}
+.opts{display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex:1;}
+.opt{display:flex;align-items:center;gap:9px;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;cursor:pointer;transition:all .16s;font-size:13px;color:var(--text2);font-weight:600;}
+.opt input{margin-top:1px;accent-color:var(--primary);cursor:pointer;}
+.opt:hover{border-color:var(--primary);color:var(--text);background:var(--primary-light);}
+.opt.sel{border-color:var(--primary);background:var(--primary-light);color:var(--primary);}
+.opt.correct{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.opt.wrong{background:var(--rose-light);border-color:var(--rose);color:var(--rose);}
+.qfb{margin-top:8px;padding:8px 12px;border-radius:9px;font-size:12.5px;display:none;font-weight:600;line-height:1.5;}
+.qfb.on{display:block;}
+.qfb.ok{background:var(--accent-light);color:var(--accent);border:1.5px solid rgba(5,150,105,0.25);}
+.qfb.bad{background:var(--rose-light);color:var(--rose);border:1.5px solid rgba(220,38,38,0.25);}
+.quiz-foot{display:flex;align-items:center;gap:8px;padding-top:8px;flex-shrink:0;}
+.btn-qnav{padding:8px 18px;border-radius:9px;font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .17s;border:none;letter-spacing:.02em;}
+.btn-prev{background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--primary);color:var(--primary);}
+.btn-next{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 12px rgba(79,70,229,0.25);}
+.btn-next:hover{box-shadow:0 6px 18px rgba(79,70,229,0.35);}
+.btn-submit-q{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 12px rgba(5,150,105,0.25);}
+.btn-reset-q{background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);font-weight:500;}
+
+/* ── PROGRESS ── */
+.prog-bar{height:5px;border-radius:5px;background:var(--border);overflow:hidden;margin-bottom:0;}
+.prog-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .3s ease;}
+
+/* ── SCORE OVERLAY ── */
+.score-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:36px 52px;text-align:center;box-shadow:0 20px 60px rgba(79,70,229,0.2);animation:fadeUp .3s ease;min-width:300px;}
+.score-big{font-family:'Poppins',sans-serif;font-size:80px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.score-pct{font-size:17px;color:var(--text2);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.score-sub{font-size:12px;color:var(--text3);margin:8px 0 4px;font-weight:600;}
+.score-grade{font-size:16px;font-weight:800;margin-top:8px;color:var(--primary);font-family:'Poppins',sans-serif;}
+.score-actions{display:flex;gap:8px;justify-content:center;margin-top:20px;}
+.btn-score{padding:10px 24px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .17s;letter-spacing:.02em;}
+.btn-review{background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);}
+.btn-review:hover{border-color:var(--primary);color:var(--primary);}
+.btn-ulangi{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 14px rgba(79,70,229,0.25);}
+.btn-ulangi:hover{box-shadow:0 6px 20px rgba(79,70,229,0.35);}
+
+/* ── LOADING SCREEN (halaman awal berupa gambar desain) ── */
+#loadScreen{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;z-index:99999;background:#0f172a;overflow:hidden;transition:opacity .8s ease;}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+.load-bg{position:absolute;inset:-20px;background-image:url('https://85meydiaafrina.github.io/ruangmurid/kuantum.png');background-size:cover;background-position:center;filter:blur(24px) brightness(.8);}
+.load-art{position:absolute;inset:0;background-image:url('https://85meydiaafrina.github.io/ruangmurid/kuantum.png');background-size:contain;background-position:center;background-repeat:no-repeat;}
+#btnMulai{position:absolute;left:50%;bottom:max(6vh,24px);transform:translateX(-50%);z-index:2;background:linear-gradient(135deg,#6366f1,#10b981);color:#fff;border:none;border-radius:12px;padding:13px 38px;font-family:'Poppins',sans-serif;font-size:clamp(12px,1.4vw,15px);font-weight:800;cursor:pointer;letter-spacing:.04em;box-shadow:0 8px 30px rgba(0,0,0,.45);animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;transition:box-shadow .18s,filter .18s;}
+#btnMulai:hover{filter:brightness(1.1);box-shadow:0 12px 40px rgba(0,0,0,.55);}
+@keyframes btnPop{from{opacity:0;}to{opacity:1;}}
+
+/* ORBITAL BADGE */
+.orb-badge{display:inline-flex;align-items:center;gap:5px;border-radius:7px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;}
+.orb-s{background:var(--sky-light);border:1.5px solid rgba(2,132,199,0.25);color:var(--sky);}
+.orb-p{background:var(--purple-light);border:1.5px solid rgba(124,58,237,0.25);color:var(--purple);}
+.orb-d{background:var(--accent-light);border:1.5px solid rgba(5,150,105,0.25);color:var(--accent);}
+.orb-f{background:var(--gold-light);border:1.5px solid rgba(217,119,6,0.25);color:var(--gold);}
+
+/* TUJUAN */
+.tp-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;gap:14px;align-items:flex-start;transition:border-color .2s,box-shadow .15s,transform .15s;margin-bottom:8px;}
+.tp-card:hover{border-color:var(--primary);box-shadow:0 4px 16px rgba(79,70,229,0.08);transform:translateY(-1px);}
+.tp-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;}
+.tp-icon.b{background:var(--sky-light);border:1.5px solid rgba(2,132,199,0.2);}
+.tp-icon.p{background:var(--purple-light);border:1.5px solid rgba(124,58,237,0.2);}
+.tp-icon.g{background:var(--accent-light);border:1.5px solid rgba(5,150,105,0.2);}
+.tp-icon.y{background:var(--gold-light);border:1.5px solid rgba(217,119,6,0.2);}
+.tp-icon.r{background:var(--rose-light);border:1.5px solid rgba(220,38,38,0.2);}
+.tp-title{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:var(--primary);margin-bottom:3px;}
+.tp-desc{font-size:12.5px;color:var(--text2);line-height:1.6;}
+
+/* STEPS */
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:6px;}
+.snum{min-width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#fff;font-weight:700;flex-shrink:0;}
+.step p{font-size:13px;color:var(--text2);line-height:1.6;margin:0;font-weight:600;}
+
+/* quantum numbers table */
+.qn-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.qn-table th{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:7px 10px;border:1px solid rgba(79,70,229,0.1);font-family:'Poppins',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;}
+.qn-table td{padding:6px 10px;border:1px solid var(--border);color:var(--text2);font-family:'Nunito',sans-serif;font-weight:600;}
+.qn-table tr:nth-child(even) td{background:var(--bg2);}
+
+/* tujuan percobaan khusus */
+.tp-section-title{font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;color:var(--primary);margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+.tp-section-title::before{content:'';width:4px;height:18px;background:linear-gradient(var(--primary),var(--accent));border-radius:4px;flex-shrink:0;}
+.percobaan-card{background:linear-gradient(135deg,var(--primary-light),var(--accent-light));border:1.5px solid rgba(79,70,229,0.2);border-radius:14px;padding:12px 16px;}
+.percobaan-ol{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.percobaan-ol.li{display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:var(--text);font-weight:600;line-height:1.5;}
+.percobaan-ol .perc-num{min-width:22px;height:22px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;font-family:'Poppins',sans-serif;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <div class="load-bg" aria-hidden="true"></div>
+  <div class="load-art" role="img" aria-label="Halaman awal Lab Virtual Konfigurasi Elektron"></div>
+  <button id="btnMulai" onclick="startLab()">MULAI EKSPLORASI ⚛</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚛</div>
+    <div>
+      <div class="logo-text">QuantumLab</div>
+      <div class="logo-sub">Konfigurasi Elektron · MK</div>
+    </div>
+  </div>
+  <nav id="navBar">
+    <button class="nb active" onclick="showPage('tujuan',this)" data-sound="1">🎯 Tujuan</button>
+    <button class="nb" onclick="showPage('teori',this)" data-sound="1">📖 Teori</button>
+    <button class="nb" onclick="showPage('prosedur',this)" data-sound="1">📋 Prosedur</button>
+    <button class="nb" onclick="showPage('simulasi',this)" data-sound="1">🔬 Simulasi</button>
+    <button class="nb" onclick="showPage('lembar',this)" data-sound="1">📝 Lembar Kerja</button>
+    <button class="nb" onclick="showPage('kuis',this)" data-sound="1">🧪 Kuis</button>
+  </nav>
+  <button id="menuToggle" onclick="toggleMenu()" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect y="4" width="22" height="2.5" rx="1.25" fill="#475569"/><rect y="10" width="22" height="2.5" rx="1.25" fill="#475569"/><rect y="16" width="22" height="2.5" rx="1.25" fill="#475569"/></svg>
+  </button>
+</header>
+
+<div id="app">
+
+<!-- PAGE: TUJUAN -->
+<div class="page active" id="page-tujuan">
+  <div style="flex:1;display:flex;flex-direction:column;padding:8px 16px 10px;gap:6px;overflow:hidden;min-height:0;">
+
+    <!-- Header ringkas -->
+    <div style="flex-shrink:0;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:9px;padding:7px 14px;display:flex;align-items:center;gap:12px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:#93c5fd;text-transform:uppercase;margin-bottom:2px;">🎯 Tujuan Pembelajaran</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:800;color:#fff;line-height:1.2;">Lab Virtual <span style="color:#bfdbfe;">Konfigurasi Elektron</span></div>
+      </div>
+    </div>
+
+    <!-- Tujuan Pembelajaran -->
+    <div style="flex-shrink:0;background:linear-gradient(135deg,#fef3c7,#ecfdf5);border:1.5px solid rgba(217,119,6,0.25);border-radius:12px;padding:9px 14px;display:flex;align-items:center;gap:10px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#d97706,#059669);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎓</div>
+      <div>
+        <div style="font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:800;color:#d97706;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Tujuan Pembelajaran</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);line-height:1.45;">Menerapkan konsep struktur atom dan hubungannya dengan sistem periodik unsur.</div>
+      </div>
+    </div>
+
+    <!-- 2-col: Tujuan Percobaan + Indikator -->
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:0;overflow:hidden;">
+
+      <!-- KIRI: Tujuan Percobaan -->
+      <div style="background:linear-gradient(135deg,var(--primary-light),var(--accent-light));border:1.5px solid rgba(79,70,229,0.2);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;overflow:hidden;min-height:0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:800;color:var(--primary);margin-bottom:7px;flex-shrink:0;display:flex;align-items:center;gap:7px;">
+          <span style="display:inline-block;width:4px;height:16px;background:linear-gradient(var(--primary),var(--accent));border-radius:4px;flex-shrink:0;"></span>🧪 Tujuan Percobaan
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;overflow:hidden;">
+          <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text);font-weight:600;line-height:1.45;"><span class="perc-num">1</span><span>Mengamati dan menganalisis visualisasi orbital atom (s, p, d, f) melalui simulasi nebula probabilistik kuantum.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text);font-weight:600;line-height:1.45;"><span class="perc-num">2</span><span>Menentukan konfigurasi elektron unsur golongan utama dan transisi menggunakan prinsip Aufbau, Hund, dan Pauli.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text);font-weight:600;line-height:1.45;"><span class="perc-num">3</span><span>Membandingkan bentuk orbital s, p, d, f berdasarkan bilangan kuantum azimut (l) dan distribusi probabilitas elektron.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text);font-weight:600;line-height:1.45;"><span class="perc-num">4</span><span>Mengidentifikasi pengecualian konfigurasi elektron pada Cr (Z=24) dan Cu (Z=29) serta alasan kestabilannya.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text);font-weight:600;line-height:1.45;"><span class="perc-num">5</span><span>Mengkorelasikan konfigurasi elektron dengan letak unsur dalam tabel periodik (golongan dan periode).</span></div>
+        </div>
+      </div>
+
+      <!-- KANAN: Indikator Keberhasilan -->
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;min-height:0;">
+        <div class="ch" style="margin-bottom:6px;flex-shrink:0;"><div class="ci p">📋</div><div class="ct">Indikator Keberhasilan</div></div>
+        <ul class="olist" style="flex:1;overflow:hidden;">
+          <li>Menyebutkan empat bilangan kuantum dan nilai yang diperbolehkan</li>
+          <li>Menjelaskan perbedaan model atom Bohr vs mekanika kuantum</li>
+          <li>Menggambarkan diagram orbital untuk unsur Z=1 hingga Z=36</li>
+          <li>Menentukan konfigurasi elektron ion (kation &amp; anion)</li>
+          <li>Mengidentifikasi unsur berdasarkan konfigurasi elektron terakhirnya</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: TEORI -->
+<div class="page" id="page-teori">
+  <div style="flex:1;display:flex;flex-direction:column;padding:8px 16px 10px;gap:6px;overflow:hidden;min-height:0;">
+
+    <!-- Header ringkas -->
+    <div style="flex-shrink:0;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:9px;padding:7px 14px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:#93c5fd;text-transform:uppercase;margin-bottom:2px;">📖 Materi Inti</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:800;color:#fff;line-height:1.1;">Teori <span style="color:#bfdbfe;">Mekanika Kuantum</span></div>
+    </div>
+
+    <!-- BODY 2-col fit screen -->
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:0;overflow:hidden;">
+
+      <!-- KIRI -->
+      <div style="display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+
+        <!-- Bilangan Kuantum + Schrödinger gabung -->
+        <div class="card" style="flex-shrink:0;padding:7px 11px;">
+          <div class="ch" style="margin-bottom:3px;"><div class="ci b">🔢</div><div class="ct">Empat Bilangan Kuantum</div></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#eef2ff;border-left:3px solid var(--primary);padding:3px 8px;border-radius:0 5px 5px 0;color:var(--primary);margin-bottom:4px;">Ĥ Ψ = E Ψ &nbsp;→&nbsp; menghasilkan orbital s, p, d, f</div>
+          <table class="qn-table" style="font-size:11px;">
+            <tr><th>Simbol</th><th>Nama</th><th>Nilai</th><th>Keterangan</th></tr>
+            <tr><td style="color:var(--sky);font-family:'JetBrains Mono',monospace;font-weight:700"><strong>n</strong></td><td>Utama</td><td>1,2,3…</td><td>Tingkat energi / kulit</td></tr>
+            <tr><td style="color:var(--purple);font-family:'JetBrains Mono',monospace;font-weight:700"><strong>l</strong></td><td>Azimut</td><td>0→(n−1)</td><td>Bentuk orbital (s,p,d,f)</td></tr>
+            <tr><td style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-weight:700"><strong>m<sub>l</sub></strong></td><td>Magnetik</td><td>−l…+l</td><td>Orientasi orbital</td></tr>
+            <tr><td style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700"><strong>m<sub>s</sub></strong></td><td>Spin</td><td>±½</td><td>Arah putaran elektron</td></tr>
+          </table>
+        </div>
+
+        <!-- Aturan Hund -->
+        <div class="card" style="flex-shrink:0;padding:7px 11px;">
+          <div class="ch" style="margin-bottom:3px;"><div class="ci y">🤚</div><div class="ct">Aturan Hund</div></div>
+          <p style="font-size:11px;margin:0 0 3px;line-height:1.45;color:var(--text2);">Elektron mengisi masing-masing orbital lebih dahulu dengan spin paralel sebelum berpasangan.</p>
+          <div class="formula" style="font-size:11.5px;margin:0;padding:4px 8px;">↑ ↑ ↑ → kemudian → ↑↓ ↑↓ ↑↓</div>
+        </div>
+
+        <!-- Aufbau + Pauli berdampingan -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;flex-shrink:0;">
+          <div class="card" style="padding:7px 10px;">
+            <div class="ch" style="margin-bottom:3px;"><div class="ci g">📈</div><div class="ct" style="font-size:11px;">Prinsip Aufbau</div></div>
+            <div class="formula" style="font-size:9px;margin:0;padding:3px 6px;line-height:1.5;">1s→2s→2p→3s→3p→4s→3d→4p→5s→4d…</div>
+          </div>
+          <div class="card" style="padding:7px 10px;">
+            <div class="ch" style="margin-bottom:3px;"><div class="ci p">⚖️</div><div class="ct" style="font-size:11px;">Larangan Pauli</div></div>
+            <p style="font-size:10.5px;color:var(--text2);margin:0 0 2px;line-height:1.4;">Tidak ada 2 elektron dengan 4 bilangan kuantum sama.</p>
+            <div class="formula" style="font-size:11px;margin:0;padding:3px 6px;">↑↓ (ms = +½ dan −½)</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- KANAN -->
+      <div style="display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+
+        <!-- 4 orbital berdampingan 2x2 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;flex-shrink:0;">
+          <div class="card" style="padding:7px 10px;">
+            <div class="ch" style="margin-bottom:2px;"><div class="ci b">🌀</div><div class="ct" style="font-size:11px;">Orbital s</div></div>
+            <p style="font-size:10.5px;color:var(--text2);margin:0;">Bola simetris, l=0, max <strong>2e⁻</strong></p>
+            <div class="chips" style="margin:3px 0 0;gap:3px;"><span class="chip-s" style="font-size:9.5px;padding:2px 6px;">1 orbital</span><span class="chip-s" style="font-size:9.5px;padding:2px 6px;">max 2e⁻</span></div>
+          </div>
+          <div class="card" style="padding:7px 10px;">
+            <div class="ch" style="margin-bottom:2px;"><div class="ci p">💫</div><div class="ct" style="font-size:11px;">Orbital p</div></div>
+            <p style="font-size:10.5px;color:var(--text2);margin:0;">Dumbbell, l=1, max <strong>6e⁻</strong></p>
+            <div class="chips" style="margin:3px 0 0;gap:3px;"><span class="chip-p" style="font-size:9.5px;padding:2px 6px;">3 orbital</span><span class="chip-p" style="font-size:9.5px;padding:2px 6px;">max 6e⁻</span></div>
+          </div>
+          <div class="card" style="padding:7px 10px;">
+            <div class="ch" style="margin-bottom:2px;"><div class="ci g">🌸</div><div class="ct" style="font-size:11px;">Orbital d</div></div>
+            <p style="font-size:10.5px;color:var(--text2);margin:0;">Rosette, l=2, max <strong>10e⁻</strong></p>
+            <div class="chips" style="margin:3px 0 0;gap:3px;"><span class="chip-d" style="font-size:9.5px;padding:2px 6px;">5 orbital</span><span class="chip-d" style="font-size:9.5px;padding:2px 6px;">max 10e⁻</span></div>
+          </div>
+          <div class="card" style="padding:7px 10px;">
+            <div class="ch" style="margin-bottom:2px;"><div class="ci y">✨</div><div class="ct" style="font-size:11px;">Orbital f</div></div>
+            <p style="font-size:10.5px;color:var(--text2);margin:0;">Kompleks, l=3, max <strong>14e⁻</strong></p>
+            <div class="chips" style="margin:3px 0 0;gap:3px;"><span class="chip-f" style="font-size:9.5px;padding:2px 6px;">7 orbital</span><span class="chip-f" style="font-size:9.5px;padding:2px 6px;">max 14e⁻</span></div>
+          </div>
+        </div>
+
+        <!-- Contoh + Pengecualian berdampingan -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:1;min-height:0;">
+          <div class="card" style="padding:7px 11px;">
+            <div class="ch" style="margin-bottom:3px;"><div class="ci b">📝</div><div class="ct" style="font-size:11px;">Contoh Penulisan</div></div>
+            <div class="formula" style="color:var(--sky);font-size:10px;margin:3px 0;padding:3px 7px;">H (Z=1): 1s¹</div>
+            <div class="formula" style="color:var(--purple);font-size:10px;margin:3px 0;padding:3px 7px;">C (Z=6): 1s² 2s² 2p²</div>
+            <div class="formula" style="color:var(--accent);font-size:10px;margin:3px 0;padding:3px 7px;">Fe (Z=26): [Ar] 3d⁶ 4s²</div>
+            <div class="formula" style="color:var(--gold);font-size:10px;margin:3px 0;padding:3px 7px;">La (Z=57): [Xe] 5d¹ 6s²</div>
+          </div>
+          <div class="card" style="padding:7px 11px;">
+            <div class="ch" style="margin-bottom:3px;"><div class="ci r">⚡</div><div class="ct" style="font-size:11px;">Pengecualian Aufbau</div></div>
+            <p style="font-size:10.5px;color:var(--text2);margin:0 0 4px;line-height:1.4;">Kestabilan orbital setengah penuh (d⁵) dan penuh (d¹⁰):</p>
+            <div class="formula" style="color:var(--gold);font-size:10px;margin:3px 0;padding:3px 7px;">Cr (Z=24): [Ar] 3d⁵ 4s¹ ✓</div>
+            <div class="formula" style="color:var(--gold);font-size:10px;margin:3px 0;padding:3px 7px;">Cu (Z=29): [Ar] 3d¹⁰ 4s¹ ✓</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: PROSEDUR -->
+<div class="page" id="page-prosedur">
+  <div style="flex:1;display:flex;flex-direction:column;padding:8px 16px 10px;gap:6px;overflow:hidden;min-height:0;">
+
+    <!-- Header ringkas -->
+    <div style="flex-shrink:0;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:9px;padding:7px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:#93c5fd;text-transform:uppercase;margin-bottom:2px;">📋 Langkah Kerja</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:800;color:#fff;line-height:1.1;">Prosedur <span style="color:#bfdbfe;">Percobaan</span></div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:5px;padding:3px 9px;font-size:10px;color:#bfdbfe;font-weight:600;">🧪 Tabung A–E</span>
+        <span style="background:rgba(220,38,38,0.2);border:1px solid rgba(220,38,38,0.3);border-radius:5px;padding:3px 9px;font-size:10px;color:#fca5a5;font-weight:600;">⚠ Satu variabel/percobaan</span>
+      </div>
+    </div>
+
+    <!-- Konten: 2 kolom A & B + catatan -->
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:0;overflow:hidden;">
+
+      <!-- KIRI: A. Eksplorasi Teori -->
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="margin-bottom:6px;flex-shrink:0;"><div class="ci b">🔍</div><div class="ct">A. Eksplorasi Teori</div></div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;">
+          <div class="step"><div class="snum">1</div><p>Buka menu <strong>Teori</strong> dan baca materi tentang bilangan kuantum (n, l, m<sub>l</sub>, m<sub>s</sub>) serta aturan Aufbau, Hund, dan Pauli.</p></div>
+          <div class="step"><div class="snum">2</div><p>Pelajari tabel bilangan kuantum dan hubungannya dengan bentuk orbital s, p, d, dan f.</p></div>
+          <div class="step"><div class="snum">3</div><p>Catat contoh konfigurasi elektron dan pengecualian pada unsur Cr dan Cu.</p></div>
+        </div>
+      </div>
+
+      <!-- KANAN: B. Simulasi + Catatan -->
+      <div style="display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+        <div class="card" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;">
+          <div class="ch" style="margin-bottom:6px;flex-shrink:0;"><div class="ci g">🔬</div><div class="ct">B. Simulasi Orbital</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div class="step"><div class="snum">4</div><p>Buka menu <strong>Simulasi</strong>, pilih unsur dari dropdown (mulai dari H, He, Li, dst.).</p></div>
+            <div class="step"><div class="snum">5</div><p>Pilih jenis orbital (s, p, d, atau f) lalu tekan tombol <strong>▶ Jalankan</strong>.</p></div>
+            <div class="step"><div class="snum">6</div><p>Amati bentuk nebula probabilistik dan catat informasi n, l, jumlah elektron, dan konfigurasi yang tampil.</p></div>
+            <div class="step"><div class="snum">7</div><p>Ulangi untuk minimal 5 unsur berbeda termasuk unsur transisi (Fe, Cu, Zn).</p></div>
+          </div>
+        </div>
+        <div class="notebox" style="flex-shrink:0;">
+          <div class="nt">⚠ Catatan Penting</div>
+          <p>Gunakan tombol <strong>↺ Reset</strong> di simulasi untuk menghapus animasi sebelum memilih unsur baru. Pastikan mengisi lembar kerja <em>sebelum</em> mengerjakan kuis agar pemahaman lebih optimal.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: SIMULASI -->
+<div class="page" id="page-simulasi">
+  <div style="flex:1;display:flex;flex-direction:column;padding:10px 16px 12px;gap:8px;overflow:hidden;min-height:0;">
+    <div class="hero" style="flex-shrink:0;padding:8px 16px;">
+      <div>
+        <div class="h-label">🔬 Laboratorium Virtual</div>
+        <div class="h-title">Visualisasi Orbital Kuantum</div>
+        <div class="h-desc" style="font-size:11.5px">Pilih unsur dan orbital untuk melihat visualisasi nebula probabilistik elektron.</div>
+      </div>
+    </div>
+    <div class="sim-wrap" style="flex:1;min-height:0;">
+      <div class="ctrl-panel">
+        <h3>⚙ Kontrol Simulasi</h3>
+        <div class="cg">
+          <label>Pilih Unsur</label>
+          <select id="selUnsur" onchange="updateUnsur();playSound('click')">
+            <option value="H,1">H – Hidrogen (1)</option>
+            <option value="He,2">He – Helium (2)</option>
+            <option value="Li,3">Li – Litium (3)</option>
+            <option value="Be,4">Be – Berilium (4)</option>
+            <option value="B,5">B – Boron (5)</option>
+            <option value="C,6">C – Karbon (6)</option>
+            <option value="N,7">N – Nitrogen (7)</option>
+            <option value="O,8">O – Oksigen (8)</option>
+            <option value="F,9">F – Fluor (9)</option>
+            <option value="Ne,10">Ne – Neon (10)</option>
+            <option value="Na,11">Na – Natrium (11)</option>
+            <option value="Mg,12">Mg – Magnesium (12)</option>
+            <option value="Al,13">Al – Aluminium (13)</option>
+            <option value="Si,14">Si – Silikon (14)</option>
+            <option value="P,15">P – Fosfor (15)</option>
+            <option value="S,16">S – Belerang (16)</option>
+            <option value="Cl,17">Cl – Klorin (17)</option>
+            <option value="Ar,18">Ar – Argon (18)</option>
+            <option value="K,19">K – Kalium (19)</option>
+            <option value="Ca,20">Ca – Kalsium (20)</option>
+            <option value="Fe,26">Fe – Besi (26)</option>
+            <option value="Cu,29">Cu – Tembaga (29)</option>
+            <option value="Zn,30">Zn – Seng (30)</option>
+            <option value="Br,35">Br – Bromin (35)</option>
+            <option value="Kr,36">Kr – Kripton (36)</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>Jenis Orbital</label>
+          <select id="selOrbital" onchange="updateOrbital();playSound('click')">
+            <option value="s">s — Bola Simetris</option>
+            <option value="p">p — Dumbbell</option>
+            <option value="d">d — Rosette</option>
+            <option value="f">f — Kompleks</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>Kecepatan Animasi</label>
+          <select id="selSpeed" onchange="playSound('click')">
+            <option value="0.3">Lambat</option>
+            <option value="1" selected>Normal</option>
+            <option value="2.5">Cepat</option>
+          </select>
+        </div>
+        <button class="btn btn-sim" id="btnStart" onclick="startSim()">▶ Jalankan</button>
+        <button class="btn btn-stop" id="btnStop" onclick="stopSim()" disabled>⏹ Hentikan</button>
+        <button class="btn btn-reset" onclick="resetSim()">↺ Reset</button>
+
+        <div style="border-top:1.5px solid var(--border);padding-top:8px;">
+          <div style="font-family:'Poppins',sans-serif;font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;font-weight:700;">Info Unsur</div>
+          <div id="unsurInfo" style="font-size:12.5px;color:var(--text2);line-height:1.7;font-weight:600;"></div>
+        </div>
+      </div>
+
+      <div class="sim-right">
+        <div class="canvas-wrap" style="flex:1;min-height:0;">
+          <h3>🌌 VISUALISASI ORBITAL NEBULA</h3>
+          <canvas id="simCanvas"></canvas>
+        </div>
+        <div class="info-bar" style="flex-shrink:0;">
+          <div class="ibox"><span class="iv s" id="infoN">—</span><span class="il">n (Kulit)</span></div>
+          <div class="ibox"><span class="iv p" id="infoL">—</span><span class="il">l (Subkulit)</span></div>
+          <div class="ibox"><span class="iv d" id="infoE">—</span><span class="il">Elektron</span></div>
+          <div class="ibox"><span class="iv f" id="infoOrb">—</span><span class="il">Orbital</span></div>
+          <div class="ibox"><span class="iv w" id="infoKfg" style="font-size:10px;letter-spacing:0;">—</span><span class="il">Konfigurasi</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: LEMBAR KERJA -->
+<div class="page" id="page-lembar">
+  <div class="lk-fit">
+    <div class="lk-top">
+      <div class="lk-hero">
+        <div class="h-label">📝 Lembar Kerja Siswa</div>
+        <div class="h-title">Konfigurasi<br><span>Elektron</span></div>
+        <button class="lk-mini-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));margin-top:8px;width:fit-content;font-size:11.5px;padding:6px 14px;box-shadow:0 4px 14px rgba(5,150,105,0.35);" onclick="downloadLK()">💾 Simpan &amp; Unduh File</button>
+      </div>
+      <div class="lk-identitas">
+        <div><label>Nama Lengkap</label><input class="lk-input" id="lkNama" placeholder="Tulis namamu…" onfocus="playSound('click')"></div>
+        <div><label>Kelas</label><input class="lk-input" id="lkKelas" placeholder="XII IPA 1" onfocus="playSound('click')"></div>
+        <div><label>Tanggal</label><input class="lk-input" type="date" id="lkTgl" onfocus="playSound('click')"></div>
+        <div><label>No. Absen</label><input class="lk-input" id="lkNo" placeholder="01" onfocus="playSound('click')"></div>
+      </div>
+    </div>
+
+    <div class="lk-main">
+      <div class="lk-col-tables">
+        <div class="lk-card">
+          <div class="lk-card-head">
+            <div class="ci g">📊</div>
+            <div class="ct">Tabel Konfigurasi Elektron</div>
+            <button class="lk-mini-btn" onclick="cekTabel()">✓ Cek</button>
+            <button class="lk-mini-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));margin-left:4px;box-shadow:0 2px 8px rgba(5,150,105,0.3);" onclick="downloadLK()">💾 Simpan File</button>
+          </div>
+          <div style="overflow-y:auto;flex:1;">
+            <table class="lk-table" id="lkTabel">
+              <tr><th>Unsur</th><th>Z</th><th>Konfigurasi Elektron</th><th>e⁻ Valensi</th><th>Gol.</th><th>Periode</th></tr>
+              <tr><td>H</td><td>1</td><td><input placeholder="1s¹"></td><td><input placeholder="1"></td><td><input placeholder="IA"></td><td><input placeholder="1"></td></tr>
+              <tr><td>C</td><td>6</td><td><input placeholder="1s² 2s² 2p²"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+              <tr><td>Na</td><td>11</td><td><input placeholder="[Ne] 3s¹"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+              <tr><td>Cl</td><td>17</td><td><input placeholder="1s² 2s² 2p⁶ 3s² 3p⁵"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+              <tr><td>Ca</td><td>20</td><td><input placeholder="[Ar] 4s²"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+              <tr><td>Fe</td><td>26</td><td><input placeholder="[Ar] 3d⁶ 4s²"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+              <tr><td>Cu</td><td>29</td><td><input placeholder="[Ar] 3d¹⁰ 4s¹"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+              <tr><td>Br</td><td>35</td><td><input placeholder="[Ar] 3d¹⁰ 4s² 4p⁵"></td><td><input placeholder=""></td><td><input placeholder=""></td><td><input placeholder=""></td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="lk-card" style="flex:none;">
+          <div class="lk-card-head">
+            <div class="ci p">🔢</div>
+            <div class="ct">Bilangan Kuantum untuk Fe (3d⁶)</div>
+          </div>
+          <table class="lk-table" id="lkTabelBK">
+            <tr><th>Elektron ke-</th><th>n</th><th>l</th><th>mₗ</th><th>ms</th></tr>
+            <tr><td>1 (3d)</td><td><input placeholder="3"></td><td><input placeholder="2"></td><td><input placeholder="-2"></td><td><input placeholder="+½"></td></tr>
+            <tr><td>2 (3d)</td><td><input placeholder="3"></td><td><input placeholder="2"></td><td><input placeholder="-1"></td><td><input placeholder="+½"></td></tr>
+            <tr><td>3 (3d)</td><td><input placeholder="3"></td><td><input placeholder="2"></td><td><input placeholder="0"></td><td><input placeholder="+½"></td></tr>
+            <tr><td>4 (3d)</td><td><input placeholder="3"></td><td><input placeholder="2"></td><td><input placeholder="+1"></td><td><input placeholder="+½"></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="lk-col-q">
+        <div class="lk-card" style="flex:1.2;">
+          <div class="lk-card-head"><div class="ci b">❓</div><div class="ct">Pertanyaan Analisis</div></div>
+          <div style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px;">
+            <div>
+              <div style="font-size:11.5px;color:var(--primary);font-weight:700;margin-bottom:4px;">1. Jelaskan mengapa Cu (Z=29) memiliki konfigurasi [Ar]3d¹⁰4s¹, bukan [Ar]3d⁹4s²?</div>
+              <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…" onfocus="playSound('click')"></textarea>
+            </div>
+            <div>
+              <div style="font-size:11.5px;color:var(--primary);font-weight:700;margin-bottom:4px;">2. Apa perbedaan mendasar antara model atom Bohr dan mekanika kuantum dalam menggambarkan posisi elektron?</div>
+              <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…" onfocus="playSound('click')"></textarea>
+            </div>
+            <div>
+              <div style="font-size:11.5px;color:var(--primary);font-weight:700;margin-bottom:4px;">3. Tentukan letak unsur X dengan konfigurasi [Xe]4f¹⁴5d¹⁰6s¹ dalam tabel periodik!</div>
+              <textarea class="disc-area" rows="2" placeholder="Periode: … Golongan: …" onfocus="playSound('click')"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="lk-card" style="flex:none;">
+          <div class="lk-card-head">
+            <div class="ci y">🎯</div>
+            <div class="ct">Kesimpulan</div>
+            <button class="lk-mini-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 2px 8px rgba(5,150,105,0.3);margin-left:auto;" onclick="downloadLK()">💾 Simpan File</button>
+          </div>
+          <textarea class="disc-area" rows="4" placeholder="Tuliskan kesimpulan dari praktikum lab virtual ini…" onfocus="playSound('click')"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: KUIS -->
+<div class="page" id="page-kuis">
+  <div style="flex:1;display:flex;flex-direction:column;padding:10px 16px 12px;gap:8px;overflow:hidden;min-height:0;">
+    <div class="hero" style="flex-shrink:0;padding:8px 16px;">
+      <div>
+        <div class="h-label">🧪 Evaluasi Pemahaman</div>
+        <div class="h-title">Kuis Konfigurasi Elektron</div>
+        <div class="h-desc" style="font-size:11.5px">Uji pemahamanmu tentang bilangan kuantum, orbital, dan konfigurasi elektron.</div>
+      </div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="quizProg" style="width:10%"></div></div>
+    <div class="quiz-wrap">
+      <div class="qcard">
+        <div class="qno" id="qno">SOAL 1 / 10</div>
+        <div class="qtext" id="qtext"></div>
+        <div class="opts" id="qopts"></div>
+        <div class="qfb" id="qfb"></div>
+      </div>
+      <div class="quiz-foot">
+        <button class="btn-qnav btn-prev" id="btnPrev" onclick="prevQ()">‹ Sebelumnya</button>
+        <button class="btn-qnav btn-next" id="btnNext" onclick="nextQ()">Berikutnya ›</button>
+        <button class="btn-qnav btn-submit-q" id="btnSubmit" onclick="submitQuiz()" style="display:none">✓ Selesai</button>
+        <button class="btn-qnav btn-reset-q" id="btnResetQ" onclick="resetQuiz()">↺</button>
+        <span class="qcounter" id="qcounter"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- SCORE OVERLAY -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div style="font-size:13px;color:var(--text3);margin-bottom:5px;font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Hasil Kuis ⚛</div>
+    <div class="score-big" id="scoreBig">0</div>
+    <div class="score-pct" id="scorePct">dari 10 soal</div>
+    <div class="score-sub">Nilai Akhir</div>
+    <div class="score-grade" id="scoreGrade">—</div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="reviewQuiz()">📋 Review</button>
+      <button class="btn-score btn-ulangi" onclick="resetQuiz();document.getElementById('scoreOverlay').classList.remove('on')">↺ Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// AUDIO ENGINE
+// ═══════════════════════════════════════
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+  if (AC.state === 'suspended') AC.resume();
+  const now = AC.currentTime;
+  const sounds = {
+    nav0: ()=>{
+      [523.25,659.25,783.99].forEach((f,i)=>{
+        const o=AC.createOscillator(),g=AC.createGain();
+        o.type='sine';o.frequency.value=f;
+        g.gain.setValueAtTime(0.12,now+i*0.05);
+        g.gain.exponentialRampToValueAtTime(0.001,now+i*0.05+0.35);
+        o.connect(g);g.connect(AC.destination);
+        o.start(now+i*0.05);o.stop(now+i*0.05+0.35);
+      });
+    },
+    nav1: ()=>{
+      [392,494,587,784].forEach((f,i)=>{
+        const o=AC.createOscillator(),g=AC.createGain();
+        o.type='triangle';o.frequency.value=f;
+        g.gain.setValueAtTime(0.1,now+i*0.07);
+        g.gain.exponentialRampToValueAtTime(0.001,now+i*0.07+0.28);
+        o.connect(g);g.connect(AC.destination);
+        o.start(now+i*0.07);o.stop(now+i*0.07+0.28);
+      });
+    },
+    nav2: ()=>{
+      const o=AC.createOscillator(),g=AC.createGain(),filter=AC.createBiquadFilter();
+      o.type='sawtooth';o.frequency.setValueAtTime(110,now);
+      o.frequency.exponentialRampToValueAtTime(220,now+0.15);
+      filter.type='lowpass';filter.frequency.value=1200;
+      g.gain.setValueAtTime(0.15,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.55);
+      o.connect(filter);filter.connect(g);g.connect(AC.destination);
+      o.start(now);o.stop(now+0.55);
+    },
+    nav3: ()=>{
+      const o=AC.createOscillator(),g=AC.createGain(),o2=AC.createOscillator(),g2=AC.createGain();
+      o.type='square';o.frequency.value=220;
+      o2.type='sine';o2.frequency.value=440;
+      g.gain.setValueAtTime(0.06,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.45);
+      g2.gain.setValueAtTime(0.12,now);g2.gain.exponentialRampToValueAtTime(0.001,now+0.45);
+      o.connect(g);o2.connect(g2);g.connect(AC.destination);g2.connect(AC.destination);
+      o.start(now);o.stop(now+0.45);o2.start(now);o2.stop(now+0.45);
+    },
+    nav4: ()=>{
+      const buf=AC.createBuffer(1,AC.sampleRate*0.15,AC.sampleRate);
+      const d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/2000)*0.35;
+      const src=AC.createBufferSource(),g=AC.createGain();
+      g.gain.value=0.45;src.buffer=buf;src.connect(g);g.connect(AC.destination);src.start(now);
+    },
+    nav5: ()=>{
+      [880,1100,880,1320].forEach((f,i)=>{
+        const o=AC.createOscillator(),g=AC.createGain();
+        o.type='sine';o.frequency.value=f;
+        g.gain.setValueAtTime(0.1,now+i*0.06);
+        g.gain.exponentialRampToValueAtTime(0.001,now+i*0.06+0.16);
+        o.connect(g);g.connect(AC.destination);
+        o.start(now+i*0.06);o.stop(now+i*0.06+0.16);
+      });
+    },
+    click: ()=>{
+      const o=AC.createOscillator(),g=AC.createGain();
+      o.type='sine';o.frequency.value=700;
+      g.gain.setValueAtTime(0.08,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.1);
+      o.connect(g);g.connect(AC.destination);o.start(now);o.stop(now+0.1);
+    },
+    select: ()=>{
+      const o=AC.createOscillator(),g=AC.createGain();
+      o.type='triangle';o.frequency.setValueAtTime(550,now);
+      o.frequency.exponentialRampToValueAtTime(750,now+0.08);
+      g.gain.setValueAtTime(0.09,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.15);
+      o.connect(g);g.connect(AC.destination);o.start(now);o.stop(now+0.15);
+    },
+    success: ()=>{
+      [523,659,784,1047].forEach((f,i)=>{
+        const o=AC.createOscillator(),g=AC.createGain();
+        o.type='sine';o.frequency.value=f;
+        g.gain.setValueAtTime(0.13,now+i*0.09);
+        g.gain.exponentialRampToValueAtTime(0.001,now+i*0.09+0.45);
+        o.connect(g);g.connect(AC.destination);
+        o.start(now+i*0.09);o.stop(now+i*0.09+0.45);
+      });
+    },
+    error: ()=>{
+      const o=AC.createOscillator(),g=AC.createGain();
+      o.type='sawtooth';o.frequency.value=200;
+      o.frequency.exponentialRampToValueAtTime(100,now+0.3);
+      g.gain.setValueAtTime(0.1,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);
+      o.connect(g);g.connect(AC.destination);o.start(now);o.stop(now+0.3);
+    },
+    start: ()=>{
+      [220,330,440,550,660].forEach((f,i)=>{
+        const o=AC.createOscillator(),g=AC.createGain();
+        o.type='sine';o.frequency.value=f;
+        g.gain.setValueAtTime(0.09,now+i*0.07);
+        g.gain.exponentialRampToValueAtTime(0.001,now+i*0.07+0.38);
+        o.connect(g);g.connect(AC.destination);
+        o.start(now+i*0.07);o.stop(now+i*0.07+0.38);
+      });
+    },
+    hover: ()=>{
+      const o=AC.createOscillator(),g=AC.createGain();
+      o.type='sine';o.frequency.value=900;
+      g.gain.setValueAtTime(0.04,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.07);
+      o.connect(g);g.connect(AC.destination);o.start(now);o.stop(now+0.07);
+    }
+  };
+  try{ (sounds['nav'+type] || sounds[type] || sounds.click)(); }catch(e){}
+}
+
+// Add hover sound to all nav buttons
+document.querySelectorAll('.nb').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>playSound('hover'));
+});
+
+// ═══════════════════════════════════════
+// LOADING SCREEN
+// ═══════════════════════════════════════
+// Halaman awal kini berupa gambar desain + tombol mulai.
+
+function startLab(){
+  playSound('start');
+  document.getElementById('loadScreen').classList.add('hide');
+  setTimeout(()=>{
+    document.getElementById('loadScreen').style.display='none';
+  },900);
+  initSimCanvas();
+  updateUnsur();
+  initQuiz();
+  document.getElementById('lkTgl').valueAsDate=new Date();
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showPage(id, btn) {
+  const snd = btn ? parseInt(btn.dataset.sound||0) : 0;
+  playSound(snd);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='simulasi') setTimeout(()=>resizeSimCanvas(),50);
+  document.getElementById('navBar').classList.remove('open');
+}
+
+function toggleMenu(){
+  document.getElementById('navBar').classList.toggle('open');
+  playSound('click');
+}
+
+// ═══════════════════════════════════════
+// SIMULATION
+// ═══════════════════════════════════════
+const simCanvas = document.getElementById('simCanvas');
+const ctx = simCanvas.getContext('2d');
+let simRunning = false, simRaf;
+let simParticles = [], simTime = 0;
+let currentOrbital = 's', currentElement = {sym:'H', z:1};
+
+const configs = {
+  1:{sym:'H',name:'Hidrogen',cfg:'1s¹',n:1,l:0,e:1,orbs:1},
+  2:{sym:'He',name:'Helium',cfg:'1s²',n:1,l:0,e:2,orbs:1},
+  3:{sym:'Li',name:'Litium',cfg:'[He] 2s¹',n:2,l:0,e:3,orbs:2},
+  4:{sym:'Be',name:'Berilium',cfg:'[He] 2s²',n:2,l:0,e:4,orbs:2},
+  5:{sym:'B',name:'Boron',cfg:'[He] 2s² 2p¹',n:2,l:1,e:5,orbs:3},
+  6:{sym:'C',name:'Karbon',cfg:'[He] 2s² 2p²',n:2,l:1,e:6,orbs:3},
+  7:{sym:'N',name:'Nitrogen',cfg:'[He] 2s² 2p³',n:2,l:1,e:7,orbs:3},
+  8:{sym:'O',name:'Oksigen',cfg:'[He] 2s² 2p⁴',n:2,l:1,e:8,orbs:3},
+  9:{sym:'F',name:'Fluor',cfg:'[He] 2s² 2p⁵',n:2,l:1,e:9,orbs:3},
+  10:{sym:'Ne',name:'Neon',cfg:'[He] 2s² 2p⁶',n:2,l:1,e:10,orbs:3},
+  11:{sym:'Na',name:'Natrium',cfg:'[Ne] 3s¹',n:3,l:0,e:11,orbs:3},
+  12:{sym:'Mg',name:'Magnesium',cfg:'[Ne] 3s²',n:3,l:0,e:12,orbs:3},
+  13:{sym:'Al',name:'Aluminium',cfg:'[Ne] 3s² 3p¹',n:3,l:1,e:13,orbs:3},
+  14:{sym:'Si',name:'Silikon',cfg:'[Ne] 3s² 3p²',n:3,l:1,e:14,orbs:3},
+  15:{sym:'P',name:'Fosfor',cfg:'[Ne] 3s² 3p³',n:3,l:1,e:15,orbs:3},
+  16:{sym:'S',name:'Belerang',cfg:'[Ne] 3s² 3p⁴',n:3,l:1,e:16,orbs:3},
+  17:{sym:'Cl',name:'Klorin',cfg:'[Ne] 3s² 3p⁵',n:3,l:1,e:17,orbs:3},
+  18:{sym:'Ar',name:'Argon',cfg:'[Ne] 3s² 3p⁶',n:3,l:1,e:18,orbs:3},
+  19:{sym:'K',name:'Kalium',cfg:'[Ar] 4s¹',n:4,l:0,e:19,orbs:4},
+  20:{sym:'Ca',name:'Kalsium',cfg:'[Ar] 4s²',n:4,l:0,e:20,orbs:4},
+  26:{sym:'Fe',name:'Besi',cfg:'[Ar] 3d⁶ 4s²',n:4,l:2,e:26,orbs:4},
+  29:{sym:'Cu',name:'Tembaga',cfg:'[Ar] 3d¹⁰ 4s¹',n:4,l:2,e:29,orbs:4},
+  30:{sym:'Zn',name:'Seng',cfg:'[Ar] 3d¹⁰ 4s²',n:4,l:2,e:30,orbs:4},
+  35:{sym:'Br',name:'Bromin',cfg:'[Ar] 3d¹⁰ 4s² 4p⁵',n:4,l:1,e:35,orbs:4},
+  36:{sym:'Kr',name:'Kripton',cfg:'[Ar] 3d¹⁰ 4s² 4p⁶',n:4,l:1,e:36,orbs:4},
+};
+
+const orbColors = {s:'#0284c7',p:'#7c3aed',d:'#059669',f:'#d97706'};
+
+function resizeSimCanvas(){
+  const wrap = simCanvas.parentElement;
+  simCanvas.width = wrap.clientWidth - 20;
+  simCanvas.height = wrap.clientHeight - 44;
+  if(!simRunning) drawStaticOrb();
+}
+
+function initSimCanvas(){
+  resizeSimCanvas();
+  window.addEventListener('resize', resizeSimCanvas);
+}
+
+function generateParticles(orbital, count) {
+  const W=simCanvas.width, H=simCanvas.height;
+  const cx=W/2, cy=H/2;
+  const R=Math.min(W,H)*0.35;
+  simParticles = [];
+  for(let i=0;i<count;i++){
+    let px, py, alpha;
+    const theta=Math.random()*Math.PI*2;
+    const phi=Math.random()*Math.PI;
+    if(orbital==='s'){
+      const r=R*Math.cbrt(Math.random());
+      px=cx+r*Math.sin(phi)*Math.cos(theta);
+      py=cy+r*Math.cos(phi)*0.9;
+      alpha=0.4+0.6*(1-r/R);
+    } else if(orbital==='p'){
+      const lobe=Math.random()<0.5?1:-1;
+      const r=R*Math.cbrt(Math.random())*0.9;
+      const spread=Math.random()*0.4;
+      px=cx+lobe*r*(1-spread)+((Math.random()-.5)*R*0.25);
+      py=cy+((Math.random()-.5)*R*0.35);
+      alpha=0.4+0.6*(1-r/R);
+    } else if(orbital==='d'){
+      const lobe=Math.floor(Math.random()*4);
+      const angles=[0, Math.PI/2, Math.PI, 3*Math.PI/2];
+      const ang=angles[lobe]+((Math.random()-.5)*0.6);
+      const r=R*0.3+R*0.6*Math.random();
+      px=cx+r*Math.cos(ang)*0.85;
+      py=cy+r*Math.sin(ang)*0.85;
+      alpha=0.3+0.7*Math.random();
+    } else {
+      const ang=Math.random()*Math.PI*2;
+      const r=R*(0.2+0.7*Math.random());
+      const twist=Math.sin(ang*3.5)*0.4;
+      px=cx+r*Math.cos(ang+twist);
+      py=cy+r*Math.sin(ang+twist)*0.7;
+      alpha=0.3+0.7*Math.random();
+    }
+    simParticles.push({
+      x:px, y:py, r:Math.random()*1.8+0.4,
+      alpha, baseAlpha:alpha,
+      vx:(Math.random()-.5)*0.4, vy:(Math.random()-.5)*0.4,
+      phase:Math.random()*Math.PI*2,
+      col:orbColors[orbital]
+    });
+  }
+}
+
+function drawStaticOrb(){
+  const W=simCanvas.width, H=simCanvas.height;
+  ctx.fillStyle='#0d1117';ctx.fillRect(0,0,W,H);
+  drawBackground(W/2,H/2,W,H,0);
+}
+
+function drawBackground(cx,cy,W,H,t){
+  if(!window._starField || window._starField.w!==W){
+    window._starField={w:W,h:H,stars:[]};
+    for(let i=0;i<100;i++) window._starField.stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*0.8+0.2,a:Math.random()});
+  }
+  window._starField.stars.forEach(s=>{
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${s.a*0.4+0.1*Math.sin(t*0.5+s.x)})`;ctx.fill();
+  });
+}
+
+function renderSim(){
+  simRaf = requestAnimationFrame(renderSim);
+  const W=simCanvas.width, H=simCanvas.height;
+  const cx=W/2, cy=H/2;
+  const speed = parseFloat(document.getElementById('selSpeed').value);
+  simTime += 0.016*speed;
+  const t=simTime;
+
+  ctx.fillStyle='rgba(13,17,23,0.18)';ctx.fillRect(0,0,W,H);
+  drawBackground(cx,cy,W,H,t);
+
+  const orb=currentOrbital;
+  const col=orbColors[orb];
+  const R=Math.min(W,H)*0.35;
+
+  if(orb==='s'){
+    for(let r=3;r>=1;r--){
+      const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,R*r*0.5);
+      grd.addColorStop(0,hexToRgba(col,0.12));
+      grd.addColorStop(0.5,hexToRgba(col,0.05));
+      grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(cx,cy,R*r*0.5+Math.sin(t*0.7)*7,0,Math.PI*2);
+      ctx.fillStyle=grd;ctx.fill();
+    }
+  } else if(orb==='p'){
+    [-1,1].forEach(lobe=>{
+      const grd=ctx.createRadialGradient(cx+lobe*R*0.5,cy,0,cx+lobe*R*0.5,cy,R*0.6);
+      grd.addColorStop(0,hexToRgba(col,0.14));
+      grd.addColorStop(0.5,hexToRgba(col,0.05));
+      grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.ellipse(cx+lobe*R*0.5,cy,R*0.55+Math.sin(t)*5,R*0.3,0,0,Math.PI*2);
+      ctx.fillStyle=grd;ctx.fill();
+    });
+  } else if(orb==='d'){
+    [0,90,180,270].forEach(angle=>{
+      const rad=angle*Math.PI/180+t*0.1;
+      const lx=cx+Math.cos(rad)*R*0.55;
+      const ly=cy+Math.sin(rad)*R*0.55;
+      const grd=ctx.createRadialGradient(lx,ly,0,lx,ly,R*0.45);
+      grd.addColorStop(0,hexToRgba(col,0.14));
+      grd.addColorStop(0.5,hexToRgba(col,0.05));
+      grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(lx,ly,R*0.42,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+    });
+  } else {
+    for(let l=0;l<7;l++){
+      const ang=l*Math.PI*2/7+t*0.08;
+      const lx=cx+Math.cos(ang+Math.sin(ang*3.5)*0.3)*R*0.55;
+      const ly=cy+Math.sin(ang+Math.sin(ang*3.5)*0.3)*R*0.45;
+      const grd=ctx.createRadialGradient(lx,ly,0,lx,ly,R*0.35);
+      grd.addColorStop(0,hexToRgba(col,0.13));
+      grd.addColorStop(0.5,hexToRgba(col,0.05));
+      grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(lx,ly,R*0.32,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+    }
+  }
+
+  simParticles.forEach(p=>{
+    p.x+=p.vx*speed;p.y+=p.vy*speed;
+    p.alpha=p.baseAlpha*(0.6+0.4*Math.sin(t*2+p.phase));
+    const dx=p.x-cx, dy=p.y-cy;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist>R*1.1){p.vx*=-0.8;p.vy*=-0.8;}
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=hexToRgba(p.col,p.alpha);ctx.fill();
+  });
+
+  const ng=ctx.createRadialGradient(cx,cy,0,cx,cy,20+Math.sin(t*2)*3);
+  ng.addColorStop(0,'rgba(255,240,180,0.95)');
+  ng.addColorStop(0.35,'rgba(255,200,80,0.5)');
+  ng.addColorStop(1,'transparent');
+  ctx.beginPath();ctx.arc(cx,cy,20+Math.sin(t*2)*3,0,Math.PI*2);ctx.fillStyle=ng;ctx.fill();
+  const ni=ctx.createRadialGradient(cx,cy,0,cx,cy,8);
+  ni.addColorStop(0,'rgba(255,255,255,1)');ni.addColorStop(1,'rgba(255,220,100,0.8)');
+  ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.fillStyle=ni;ctx.fill();
+
+  ctx.save();ctx.font='bold 14px Poppins, sans-serif';ctx.fillStyle=hexToRgba(col,0.75);
+  ctx.fillText(`Orbital ${orb}`, 14, H-14);ctx.restore();
+}
+
+function hexToRgba(hex,a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function updateUnsur(){
+  const val=document.getElementById('selUnsur').value.split(',');
+  const z=parseInt(val[1]);
+  const info=configs[z]||configs[1];
+  currentElement=info;
+  document.getElementById('unsurInfo').innerHTML=`<strong style="color:var(--primary);font-size:15px">${info.sym}</strong> — ${info.name}<br>Z = ${info.e}<br>Konfigurasi:<br><span style="font-family:'JetBrains Mono',monospace;color:var(--primary2);font-size:12px">${info.cfg}</span>`;
+  document.getElementById('infoN').textContent=info.n;
+  document.getElementById('infoL').textContent=['s','p','d','f'][info.l];
+  document.getElementById('infoE').textContent=info.e;
+  document.getElementById('infoOrb').textContent=info.orbs;
+  document.getElementById('infoKfg').textContent=info.cfg;
+  const orbMap=[,'s','p','d','f'];
+  document.getElementById('selOrbital').value=orbMap[info.l+1]||'s';
+  currentOrbital=document.getElementById('selOrbital').value;
+  if(simRunning){ stopSim(); startSim(); } else drawStaticOrb();
+}
+
+function updateOrbital(){
+  currentOrbital=document.getElementById('selOrbital').value;
+  if(simRunning){ stopSim(); startSim(); } else drawStaticOrb();
+}
+
+function startSim(){
+  if(simRunning) return;
+  playSound('click');
+  simRunning=true;
+  document.getElementById('btnStart').disabled=true;
+  document.getElementById('btnStop').disabled=false;
+  generateParticles(currentOrbital, 600);
+  renderSim();
+}
+
+function stopSim(){
+  simRunning=false;
+  cancelAnimationFrame(simRaf);
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnStop').disabled=true;
+  playSound('click');
+}
+
+function resetSim(){
+  playSound('click');
+  stopSim();
+  simParticles=[];
+  drawStaticOrb();
+}
+
+// ═══════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════
+const quizData = [
+  {q:'Bilangan kuantum yang menentukan <span class="math">bentuk orbital</span> adalah…',opts:['n (utama)','l (azimut)','mₗ (magnetik)','ms (spin)'],ans:1,exp:'Bilangan kuantum l (azimut) menentukan bentuk orbital: l=0→s, l=1→p, l=2→d, l=3→f.'},
+  {q:'Konfigurasi elektron unsur <span class="math">Cr (Z=24)</span> yang benar adalah…',opts:['[Ar] 3d⁴ 4s²','[Ar] 3d⁵ 4s¹','[Ar] 3d⁶','[Ar] 3d³ 4s²'],ans:1,exp:'Cr merupakan pengecualian Aufbau. 3d⁵4s¹ lebih stabil karena orbital 3d setengah penuh.'},
+  {q:'Jumlah orbital dalam subkulit <span class="math">4f</span> adalah…',opts:['5','7','9','14'],ans:1,exp:'Subkulit f (l=3) memiliki 2l+1 = 2(3)+1 = 7 orbital.'},
+  {q:'Berdasarkan aturan <span class="math">Hund</span>, cara pengisian orbital 2p nitrogen (Z=7) yang benar adalah…',opts:['↑↓ ↑ _','↑ ↑ ↑','↑↓ ↑↓ _','_ ↑ ↑↓'],ans:1,exp:'Aturan Hund: elektron mengisi masing-masing orbital lebih dahulu dengan spin paralel sebelum berpasangan.'},
+  {q:'Nilai <span class="math">ms</span> (spin) yang diperbolehkan adalah…',opts:['0 dan 1','+1 dan −1','+½ dan −½','0, +½, −½'],ans:2,exp:'Bilangan kuantum spin ms hanya bernilai +½ (spin up) atau −½ (spin down).'},
+  {q:'Unsur dengan konfigurasi elektron <span class="math">[Ar] 3d¹⁰ 4s² 4p⁶</span> adalah…',opts:['Zn','Se','Kr','Br'],ans:2,exp:'[Ar] 3d¹⁰ 4s² 4p⁶ = 18+10+2+6 = 36 elektron → Kr (Kripton, Z=36).'},
+  {q:'Orbital yang berbentuk <span class="math">dumbbell (halter)</span> adalah…',opts:['s','p','d','f'],ans:1,exp:'Orbital p (l=1) berbentuk dumbbell atau halter ganda, terdiri dari 2 lobus yang saling berlawanan arah.'},
+  {q:'Jumlah maksimum elektron pada kulit <span class="math">n=4</span> adalah…',opts:['8','18','32','50'],ans:2,exp:'Jumlah maksimum elektron pada kulit n adalah 2n². Untuk n=4: 2×4²=32.'},
+  {q:'Larangan <span class="math">Pauli</span> menyatakan bahwa…',opts:['Elektron mengisi orbital dari energi terendah','Tidak ada dua elektron dalam satu atom dengan keempat bilangan kuantum sama','Elektron mengisi orbital secara sendiri-sendiri terlebih dahulu','Elektron mengisi orbital berdasarkan nilai n+l'],ans:1,exp:'Prinsip Larangan Pauli: tidak ada dua elektron dalam satu atom yang memiliki keempat bilangan kuantum yang identik.'},
+  {q:'Unsur dengan 3 elektron tidak berpasangan pada orbital 3d menurut aturan Hund adalah…',opts:['Sc (Z=21)','V (Z=23)','Cr (Z=24)','Mn (Z=25)'],ans:1,exp:'V (Z=23): [Ar]3d³4s². Tiga elektron di 3d mengisi 3 orbital berbeda dengan spin sama → 3 elektron tidak berpasangan.'},
+];
+
+let qCurrent=0, qAnswers=Array(10).fill(null), qSubmitted=false;
+
+function initQuiz(){
+  qCurrent=0;qAnswers=Array(10).fill(null);qSubmitted=false;
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=quizData[qCurrent];
+  document.getElementById('qno').textContent=`SOAL ${qCurrent+1} / ${quizData.length}`;
+  document.getElementById('qtext').innerHTML=q.q;
+  document.getElementById('qcounter').textContent=`${qAnswers.filter(x=>x!==null).length}/${quizData.length} dijawab`;
+  document.getElementById('quizProg').style.width=((qCurrent+1)/quizData.length*100)+'%';
+
+  const optsEl=document.getElementById('qopts');
+  optsEl.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const div=document.createElement('div');
+    div.className='opt'+(qAnswers[qCurrent]===i?' sel':'');
+    if(qSubmitted){
+      if(i===q.ans) div.className='opt correct';
+      else if(qAnswers[qCurrent]===i) div.className='opt wrong';
+    }
+    div.innerHTML=`<input type="radio" name="q" ${qAnswers[qCurrent]===i?'checked':''} ${qSubmitted?'disabled':''}><span>${opt}</span>`;
+    if(!qSubmitted) div.onclick=()=>selectOpt(i);
+    optsEl.appendChild(div);
+  });
+
+  const fb=document.getElementById('qfb');
+  if(qSubmitted && qAnswers[qCurrent]!==null){
+    fb.className='qfb on '+(qAnswers[qCurrent]===q.ans?'ok':'bad');
+    fb.innerHTML=(qAnswers[qCurrent]===q.ans?'✓ Benar! ':'✗ Salah. ')+q.exp;
+  } else { fb.className='qfb'; }
+
+  document.getElementById('btnPrev').style.display=qCurrent>0?'':'none';
+  document.getElementById('btnNext').style.display=qCurrent<quizData.length-1?'':'none';
+  document.getElementById('btnSubmit').style.display=qCurrent===quizData.length-1&&!qSubmitted?'inline-block':'none';
+  if(qSubmitted) document.getElementById('btnSubmit').style.display='none';
+}
+
+function selectOpt(i){
+  if(qSubmitted) return;
+  playSound('select');
+  qAnswers[qCurrent]=i;
+  renderQuestion();
+}
+
+function nextQ(){ if(qCurrent<quizData.length-1){playSound('click');qCurrent++;renderQuestion();} }
+function prevQ(){ if(qCurrent>0){playSound('click');qCurrent--;renderQuestion();} }
+
+function submitQuiz(){
+  playSound('click');
+  qSubmitted=true;
+  const correct=qAnswers.reduce((s,a,i)=>s+(a===quizData[i].ans?1:0),0);
+  const pct=Math.round(correct/quizData.length*100);
+  const grades=['D','D','D','D','D','C','B','B','A','A','A+'];
+  document.getElementById('scoreBig').textContent=correct;
+  document.getElementById('scorePct').textContent=`dari ${quizData.length} soal (${pct}%)`;
+  document.getElementById('scoreGrade').textContent='Nilai: '+grades[correct]+' — '+(pct>=80?'🌟 Luar Biasa!':pct>=60?'👍 Bagus!':'📚 Perlu Belajar Lagi');
+  document.getElementById('scoreOverlay').classList.add('on');
+  if(pct>=80) playSound('success'); else playSound('error');
+  renderQuestion();
+}
+
+function reviewQuiz(){
+  playSound('click');
+  document.getElementById('scoreOverlay').classList.remove('on');
+  qCurrent=0;renderQuestion();
+}
+
+function resetQuiz(){
+  playSound('click');
+  qCurrent=0;qAnswers=Array(10).fill(null);qSubmitted=false;
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════
+// LEMBAR KERJA
+// ═══════════════════════════════════════
+function cekTabel(){
+  playSound('click');
+  const rows=document.querySelectorAll('#lkTabel tr:not(:first-child)');
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll('input');
+    inputs.forEach(inp=>{
+      if(inp.value.trim().length>0){
+        inp.style.background='rgba(5,150,105,0.08)';
+        inp.style.color='var(--accent)';
+      }
+    });
+  });
+  setTimeout(()=>playSound('success'),100);
+}
+
+function downloadLK(){
+  playSound('click');
+  const nama=document.getElementById('lkNama').value||'Siswa';
+  const kelas=document.getElementById('lkKelas').value||'Kelas';
+  const tgl=document.getElementById('lkTgl').value||new Date().toISOString().split('T')[0];
+  const noAbsen=document.getElementById('lkNo').value||'—';
+
+  // Konfigurasi tabel
+  const rows=document.querySelectorAll('#lkTabel tr:not(:first-child)');
+  let tableHTML='<tr><th>Unsur</th><th>Z</th><th>Konfigurasi Elektron</th><th>e⁻ Valensi</th><th>Golongan</th><th>Periode</th></tr>';
+  rows.forEach(row=>{
+    const cells=row.querySelectorAll('td');
+    const inputs=row.querySelectorAll('input');
+    tableHTML+=`<tr><td>${cells[0].textContent}</td><td>${cells[1].textContent}</td>`;
+    inputs.forEach(inp=>{ tableHTML+=`<td>${inp.value||'—'}</td>`; });
+    tableHTML+='</tr>';
+  });
+
+  // Bilangan kuantum tabel
+  const bkRows=document.querySelectorAll('#lkTabelBK tr:not(:first-child)');
+  let bkHTML='<tr><th>Elektron ke-</th><th>n</th><th>l</th><th>mₗ</th><th>ms</th></tr>';
+  bkRows.forEach(row=>{
+    const cells=row.querySelectorAll('td');
+    const inputs=row.querySelectorAll('input');
+    bkHTML+=`<tr><td>${cells[0].textContent}</td>`;
+    inputs.forEach(inp=>{ bkHTML+=`<td>${inp.value||'—'}</td>`; });
+    bkHTML+='</tr>';
+  });
+
+  // Pertanyaan
+  const disc=document.querySelectorAll('.disc-area');
+  const q1=disc[0]?.value||'—';
+  const q2=disc[1]?.value||'—';
+  const q3=disc[2]?.value||'—';
+  const kesimpulan=disc[3]?.value||'—';
+
+  const html=`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">
+<title>Lembar Kerja – ${nama}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',Arial,sans-serif;max-width:860px;margin:0 auto;padding:32px 28px 48px;color:#1e293b;background:#fff;}
+.header{background:linear-gradient(135deg,#4f46e5,#059669);border-radius:14px;padding:22px 28px;margin-bottom:20px;color:#fff;}
+.header h1{font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;margin-bottom:3px;}
+.header p{font-size:12px;opacity:.85;}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:#eef2ff;padding:14px 16px;border-radius:10px;margin-bottom:18px;border:1.5px solid rgba(79,70,229,0.15);}
+.info-item strong{display:block;font-size:9px;color:#4f46e5;text-transform:uppercase;letter-spacing:.07em;font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:3px;}
+.info-item span{font-size:13px;font-weight:700;color:#1e293b;}
+h2{font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;color:#4f46e5;margin:18px 0 8px;letter-spacing:.03em;display:flex;align-items:center;gap:7px;}
+h2::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,rgba(79,70,229,0.3),transparent);}
+table{width:100%;border-collapse:collapse;margin-bottom:14px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,0.08);}
+th{background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;padding:8px 10px;font-size:10.5px;text-align:left;font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:.04em;}
+td{padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;color:#334155;}
+tr:nth-child(even) td{background:#f8faff;}
+tr:last-child td{border-bottom:none;}
+.q-block{background:#f8faff;border:1.5px solid rgba(79,70,229,0.15);border-radius:10px;padding:12px 16px;margin-bottom:10px;}
+.q-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:800;color:#4f46e5;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.q-text{font-size:12px;color:#475569;font-weight:700;margin-bottom:8px;line-height:1.5;}
+.q-answer{font-size:12.5px;color:#1e293b;line-height:1.7;white-space:pre-wrap;min-height:40px;padding:8px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;}
+.kesimpulan{background:linear-gradient(135deg,#ecfdf5,#f0f9ff);border:1.5px solid rgba(5,150,105,0.2);border-radius:12px;padding:14px 18px;}
+.kesimpulan .q-answer{background:#fff;border-color:rgba(5,150,105,0.25);}
+footer{text-align:center;margin-top:36px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;}
+</style></head><body>
+<div class="header">
+  <h1>⚛ Lembar Kerja Siswa</h1>
+  <p>Lab Virtual — Konfigurasi Elektron Mekanika Kuantum</p>
+</div>
+<div class="info-grid">
+  <div class="info-item"><strong>Nama Lengkap</strong><span>${nama}</span></div>
+  <div class="info-item"><strong>Kelas</strong><span>${kelas}</span></div>
+  <div class="info-item"><strong>Tanggal</strong><span>${tgl}</span></div>
+  <div class="info-item"><strong>No. Absen</strong><span>${noAbsen}</span></div>
+</div>
+
+<h2>📊 Tabel Konfigurasi Elektron</h2>
+<table>${tableHTML}</table>
+
+<h2>🔢 Bilangan Kuantum Fe (3d⁶)</h2>
+<table>${bkHTML}</table>
+
+<h2>❓ Pertanyaan Analisis</h2>
+<div class="q-block">
+  <div class="q-label">Pertanyaan 1</div>
+  <div class="q-text">Jelaskan mengapa Cu (Z=29) memiliki konfigurasi [Ar]3d¹⁰4s¹, bukan [Ar]3d⁹4s²?</div>
+  <div class="q-answer">${q1}</div>
+</div>
+<div class="q-block">
+  <div class="q-label">Pertanyaan 2</div>
+  <div class="q-text">Apa perbedaan mendasar antara model atom Bohr dan mekanika kuantum dalam menggambarkan posisi elektron?</div>
+  <div class="q-answer">${q2}</div>
+</div>
+<div class="q-block">
+  <div class="q-label">Pertanyaan 3</div>
+  <div class="q-text">Tentukan letak unsur X dengan konfigurasi [Xe]4f¹⁴5d¹⁰6s¹ dalam tabel periodik!</div>
+  <div class="q-answer">${q3}</div>
+</div>
+
+<h2>🎯 Kesimpulan</h2>
+<div class="kesimpulan">
+  <div class="q-answer">${kesimpulan}</div>
+</div>
+
+<footer>Lab Virtual Konfigurasi Elektron Mekanika Kuantum — QuantumLab &copy; 2025<br>Dicetak: ${new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</footer>
+</body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`LK_KonfigElektron_${nama.replace(/\s+/g,'_')}_${kelas.replace(/\s+/g,'_')}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  setTimeout(()=>playSound('success'),100);
+}
+
+// INIT
+document.getElementById('lkTgl').valueAsDate = new Date();
+window.addEventListener('resize', ()=>{ if(simCanvas.parentElement) resizeSimCanvas(); });
+</script>
+</body>
+</html>
